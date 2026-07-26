@@ -67,12 +67,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func observeNotifications() {
         observers.append(NotificationCenter.default.addObserver(
+            forName: Preferences.hotKeysDidChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            // The user is in Settings looking at the shortcut they just set, so a conflict
+            // alert is useful here rather than noise.
+            self?.registerHotKeys(reportFailures: true)
+        })
+
+        observers.append(NotificationCenter.default.addObserver(
             forName: Preferences.didChangeNotification,
             object: nil,
             queue: .main
         ) { [weak self] _ in
             guard let self else { return }
-            self.registerHotKeys(reportFailures: true)
             // History cap / retention may have tightened.
             self.store.enforceLimits()
             self.store.flush()

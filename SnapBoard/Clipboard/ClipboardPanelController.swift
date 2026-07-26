@@ -52,13 +52,29 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         let panel = panel ?? makePanel()
         self.panel = panel
         position(panel)
+
+        // The `.nonactivatingPanel` style mask stops the panel from *implicitly* activating
+        // the app when ordered front, which is what keeps it floating over everything without
+        // disturbing window layering. Keyboard focus is a separate question: a background app
+        // is not guaranteed to receive key events, and a search field that silently swallows
+        // typing would make the whole panel useless. So we activate explicitly.
+        //
+        // This costs nothing here because the paste target is tracked independently by
+        // `FrontmostAppTracker` rather than read at paste time — and for an `.accessory` app
+        // activation is invisible: no Dock icon, no menu bar change.
+        NSApp.activate()
         panel.makeKeyAndOrderFront(nil)
         installKeyMonitor()
     }
 
-    func close() {
+    /// - Parameter restoringFocus: hand activation back to the app the user came from. False
+    ///   when the user has already chosen where focus goes (they clicked another app), or when
+    ///   the caller is about to activate a target itself (the paste path).
+    func close(restoringFocus: Bool = true) {
         removeKeyMonitor()
+        guard panel?.isVisible == true else { return }
         panel?.orderOut(nil)
+        if restoringFocus { tracker.lastExternalApp?.activate() }
     }
 
     private func makePanel() -> NonactivatingPanel {
@@ -111,8 +127,12 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
     }
 
     /// Dismiss when the user clicks away, the way Spotlight does.
+    ///
+    /// Focus is deliberately *not* restored here: the user just clicked somewhere, so they
+    /// have already said where they want to be. Re-activating the remembered app would yank
+    /// them back out of it.
     func windowDidResignKey(_ notification: Notification) {
-        close()
+        close(restoringFocus: false)
     }
 
     // MARK: - Keyboard
@@ -203,7 +223,9 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         }
 
         let target = tracker.lastExternalApp
-        close()
+        // This path activates `target` itself a few lines down; letting close() restore focus
+        // first would just cause two activations to race.
+        close(restoringFocus: false)
 
         let changeCount = Paster.writeToPasteboard(item, plainTextOnly: plainTextOnly)
         // Our own write must not come back as a new history entry attributed to SnapBoard.

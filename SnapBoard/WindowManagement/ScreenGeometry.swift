@@ -59,20 +59,28 @@ enum ScreenGeometry {
         NSScreen.screens.sorted { $0.frame.minX < $1.frame.minX }
     }
 
+    /// Locates a screen within the ordered list.
+    ///
+    /// Matches on `frame` rather than object identity: `NSScreen.screens` hands back fresh
+    /// instances after a display reconfiguration, and an identity miss here would silently
+    /// mean "no display in that direction" — i.e. a window that refuses to cross monitors.
+    /// Two distinct screens cannot share a frame, so this is exact.
+    private static func index(of screen: NSScreen, in ordered: [NSScreen]) -> Int? {
+        ordered.firstIndex { $0 === screen } ?? ordered.firstIndex { $0.frame == screen.frame }
+    }
+
     /// The display immediately to the left of `screen`, or `nil` at the left edge
     /// (unless wrapping is enabled).
     static func display(leftOf screen: NSScreen, wrap: Bool) -> NSScreen? {
         let ordered = displaysLeftToRight
-        guard ordered.count > 1,
-              let index = ordered.firstIndex(where: { $0 === screen }) else { return nil }
+        guard ordered.count > 1, let index = index(of: screen, in: ordered) else { return nil }
         if index > 0 { return ordered[index - 1] }
         return wrap ? ordered.last : nil
     }
 
     static func display(rightOf screen: NSScreen, wrap: Bool) -> NSScreen? {
         let ordered = displaysLeftToRight
-        guard ordered.count > 1,
-              let index = ordered.firstIndex(where: { $0 === screen }) else { return nil }
+        guard ordered.count > 1, let index = index(of: screen, in: ordered) else { return nil }
         if index < ordered.count - 1 { return ordered[index + 1] }
         return wrap ? ordered.first : nil
     }

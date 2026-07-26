@@ -29,12 +29,19 @@ enum Retention: String, Codable, CaseIterable, Identifiable {
 
 /// All user-facing settings, backed by `UserDefaults`.
 ///
-/// Anything that changes hot key registration or the capture timer posts
-/// `Preferences.didChangeNotification`; `AppDelegate` is the single listener and re-applies
-/// the world from scratch. That keeps the "who reacts to what" story to one place.
+/// `AppDelegate` is the single listener for both notifications and re-applies the world from
+/// scratch, which keeps the "who reacts to what" story in one place.
+///
+/// The two notifications are kept separate on purpose: re-registering hot keys can raise a
+/// "that shortcut is already taken" alert, and firing that because someone nudged the history
+/// limit would be baffling.
 final class Preferences: ObservableObject {
 
     static let shared = Preferences()
+
+    /// Bindings changed — re-register with `HotKeyManager`.
+    static let hotKeysDidChangeNotification = Notification.Name("SnapBoardHotKeysDidChange")
+    /// Everything else (history cap, retention).
     static let didChangeNotification = Notification.Name("SnapBoardPreferencesDidChange")
 
     private let defaults = UserDefaults.standard
@@ -42,26 +49,26 @@ final class Preferences: ObservableObject {
     // MARK: - Hot keys
 
     @Published var snapLeft: KeyCombo {
-        didSet { store(snapLeft, "hk.snapLeft"); announce() }
+        didSet { store(snapLeft, "hk.snapLeft"); announceHotKeys() }
     }
     @Published var snapRight: KeyCombo {
-        didSet { store(snapRight, "hk.snapRight"); announce() }
+        didSet { store(snapRight, "hk.snapRight"); announceHotKeys() }
     }
     @Published var maximize: KeyCombo {
-        didSet { store(maximize, "hk.maximize"); announce() }
+        didSet { store(maximize, "hk.maximize"); announceHotKeys() }
     }
     @Published var restoreOrMinimize: KeyCombo {
-        didSet { store(restoreOrMinimize, "hk.restoreOrMinimize"); announce() }
+        didSet { store(restoreOrMinimize, "hk.restoreOrMinimize"); announceHotKeys() }
     }
     @Published var showClipboard: KeyCombo {
-        didSet { store(showClipboard, "hk.showClipboard"); announce() }
+        didSet { store(showClipboard, "hk.showClipboard"); announceHotKeys() }
     }
 
     /// When on, plain ⌘← / ⌘→ *additionally* snap. The primary bindings keep working.
     /// This steals text-navigation (line start/end) and browser back/forward — the Settings
     /// UI says so in as many words.
     @Published var cmdArrowMode: Bool {
-        didSet { defaults.set(cmdArrowMode, forKey: "cmdArrowMode"); announce() }
+        didSet { defaults.set(cmdArrowMode, forKey: "cmdArrowMode"); announceHotKeys() }
     }
 
     // MARK: - Window management
@@ -155,5 +162,10 @@ final class Preferences: ObservableObject {
 
     private func announce() {
         NotificationCenter.default.post(name: Preferences.didChangeNotification, object: self)
+    }
+
+    private func announceHotKeys() {
+        NotificationCenter.default.post(name: Preferences.hotKeysDidChangeNotification,
+                                        object: self)
     }
 }

@@ -156,7 +156,7 @@ struct ClipboardHistoryView: View {
                         }
                     }
                     if !model.recents.isEmpty {
-                        sectionHeader(model.pinned.isEmpty ? "Recent" : "Recent")
+                        sectionHeader("Recent")
                         ForEach(Array(model.recents.enumerated()), id: \.element.id) { offset, item in
                             row(item, index: model.pinned.count + offset)
                         }

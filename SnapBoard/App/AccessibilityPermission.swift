@@ -31,28 +31,7 @@ enum AccessibilityPermission {
         NSWorkspace.shared.open(url)
     }
 
-    /// Polls until the permission is granted, then calls back on the main queue.
-    ///
-    /// There is no notification for a TCC grant, and macOS does *not* restart the app when
-    /// the user flips the switch — polling is the only option. 1 s is imperceptible to a
-    /// human walking through System Settings and costs nothing.
-    static func waitForTrust(timeout: TimeInterval = 300,
-                             onGranted: @escaping () -> Void) {
-        let deadline = Date().addingTimeInterval(timeout)
-        let timer = DispatchSource.makeTimerSource(queue: .main)
-        timer.schedule(deadline: .now() + 1.0, repeating: 1.0)
-        timer.setEventHandler {
-            if isTrusted {
-                timer.cancel()
-                onGranted()
-            } else if Date() > deadline {
-                timer.cancel()
-            }
-        }
-        timer.resume()
-        // Keep the source alive for its lifetime.
-        activeTimer = timer
-    }
-
-    private static var activeTimer: DispatchSourceTimer?
+    // Note: there is no notification for a TCC grant and macOS does not relaunch the app when
+    // the user flips the switch, so anything that needs to react to the grant has to poll.
+    // `PermissionWindowController` and `SettingsView` each do so while they are on screen.
 }
