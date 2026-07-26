@@ -224,3 +224,59 @@ These need the Accessibility grant and a human at the keyboard:
 - **`Tools/generate_xcodeproj.py` is optional.** The `.xcodeproj` is committed; regenerate it
   only after adding or moving source files. It writes deterministic IDs, so a no-op run produces
   a byte-identical file.
+
+---
+
+## Installing the prebuilt release
+
+Grab the `.dmg` from [Releases](https://github.com/r-thirumaran/SnapBoard/releases), drag
+SnapBoard to Applications, then — **this step is required**:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/SnapBoard.app
+```
+
+Release builds are **ad-hoc signed**, not notarised (that needs a paid Apple Developer account).
+Without the command above macOS says *"SnapBoard is damaged and can't be opened"* — that is
+Gatekeeper refusing an unsigned download, not a corrupted file. If you would rather not trust a
+binary from a stranger on the internet, build it yourself; it takes one command and no
+dependencies:
+
+```bash
+git clone https://github.com/r-thirumaran/SnapBoard.git && cd SnapBoard && make install
+```
+
+Then grant Accessibility as described above.
+
+> **Heads-up on updates.** macOS ties the Accessibility grant to an app's code signature, and an
+> ad-hoc signature changes on every build. After installing a new version you may need to remove
+> SnapBoard from the Accessibility list and re-add it, or run
+> `tccutil reset Accessibility com.thiru.snapboard`. This goes away if the project ever moves to
+> a Developer ID signature — see [dist/DISTRIBUTION.md](dist/DISTRIBUTION.md).
+
+## Contributing
+
+Issues and pull requests are welcome. This is a personal tool that turned out to be generally
+useful, so it is maintained on a best-effort basis.
+
+Before opening a PR:
+
+- `make test` should stay green (10 automated checks, no Xcode required — Command Line Tools are
+  enough).
+- Anything touching window management needs a manual pass; the checklist is under
+  [Testing](#testing). Say in the PR which apps and how many displays you tried.
+- Keep the commenting style: explain *why*, especially around the AX coordinate flip and the
+  pasteboard polling, since those are the parts that look wrong until you know the reason.
+- If you add or move a source file, run `make project` to regenerate the `.xcodeproj`.
+
+Useful things to pick up, roughly in order of value:
+
+- Quarter/third-screen snapping and a configurable grid
+- Encrypted-at-rest clipboard history (currently plain JSON — see the privacy note above)
+- Excluding chosen apps from clipboard capture by bundle ID
+- A proper app icon (there is none; the menu bar uses an SF Symbol)
+- Localisation — all strings are currently inline English
+
+## Licence
+
+[MIT](LICENSE). Do what you like with it; no warranty.
