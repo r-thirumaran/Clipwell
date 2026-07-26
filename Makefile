@@ -121,3 +121,39 @@ test: build
 clean:
 	@rm -rf "$(BUILD_DIR)"
 	@echo "cleaned $(BUILD_DIR)"
+
+# ---------------------------------------------------------------------------- distribution
+
+VERSION := $(shell /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Support/Info.plist)
+DMG     := $(BUILD_DIR)/SnapBoard-$(VERSION).dmg
+STAGE   := $(BUILD_DIR)/dmg-stage
+
+## Build a drag-to-install disk image for sharing with other people.
+.PHONY: dmg
+dmg: build
+	@rm -rf "$(STAGE)" "$(DMG)"
+	@mkdir -p "$(STAGE)"
+	@cp -R "$(APP)" "$(STAGE)/"
+	@ln -s /Applications "$(STAGE)/Applications"
+	@cp dist/READ-ME-FIRST.txt "$(STAGE)/" 2>/dev/null || true
+	@hdiutil create -volname "SnapBoard $(VERSION)" -srcfolder "$(STAGE)" \
+		-ov -format UDZO "$(DMG)" >/dev/null
+	@rm -rf "$(STAGE)"
+	@echo "==> $(DMG)  ($$(du -h '$(DMG)' | cut -f1))"
+	@echo ""
+	@echo "    Ad-hoc signed. Recipients MUST run this after copying to /Applications:"
+	@echo "      xattr -dr com.apple.quarantine /Applications/SnapBoard.app"
+	@echo "    See dist/DISTRIBUTION.md for the Developer ID path that removes that step."
+
+## Report what kind of signature the built app carries.
+.PHONY: signing-status
+signing-status: build
+	@echo "== signature =="
+	@codesign -dv --verbose=2 "$(APP)" 2>&1 | grep -E 'Authority|Signature|TeamIdentifier|flags' || true
+	@echo ""
+	@echo "== notarization =="
+	@spctl -a -vvv -t install "$(APP)" 2>&1 || true
+	@echo ""
+	@echo "== available identities =="
+	@security find-identity -v -p codesigning 2>/dev/null | grep -E 'Developer ID|Apple Development' \
+		|| echo "  (none — ad-hoc signing only)"

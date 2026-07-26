@@ -1,0 +1,79 @@
+SnapBoard — install in 3 steps
+==============================
+
+Windows-style window snapping + clipboard history for macOS 15 or later.
+
+
+1. DRAG SnapBoard onto the Applications folder in this window.
+
+
+2. OPEN TERMINAL AND RUN THIS ONE LINE:
+
+       xattr -dr com.apple.quarantine /Applications/SnapBoard.app
+
+   This is NOT optional. SnapBoard is signed with an ad-hoc signature
+   (an internal test build, not a paid Apple Developer certificate).
+   Without this line macOS says "SnapBoard is damaged and can't be
+   opened" — that is Gatekeeper wording it badly. The app is fine.
+
+
+3. LAUNCH IT, THEN GRANT ACCESSIBILITY.
+
+       open /Applications/SnapBoard.app
+
+   A setup window appears with a button through to the right settings
+   pane. Turn ON the switch next to SnapBoard.
+
+   The setup window closes by itself once it works.
+
+   Nothing snaps or pastes until this is granted — the app cannot move
+   another app's window without it.
+
+
+HOW TO USE IT
+-------------
+   Control+Command+Left     snap window to left half
+   Control+Command+Right    snap to right half
+   Control+Command+Up       maximize
+   Control+Command+Down     restore, or minimize
+
+   Press Left/Right again on an already-snapped window to send it to
+   your next monitor.
+
+   Command+Shift+V          clipboard history
+     type to search, arrows to move, Return to paste,
+     Shift+Return pastes as plain text, Command+P pins, Esc closes
+
+   Screenshots land in history if you use CONTROL+Command+Shift+4
+   (with Control, they go to the clipboard). Plain Command+Shift+4
+   saves a file to the Desktop instead and will not be captured.
+
+
+THINGS TO KNOW BEFORE YOU RUN THIS ON A WORK MACHINE
+----------------------------------------------------
+ * Clipboard history is stored UNENCRYPTED as plain JSON at
+     ~/Library/Application Support/SnapBoard/history.json
+   Everything you copy goes in there, including anything you paste out
+   of a password vault that does not mark itself as concealed. Check
+   your company policy. You can set retention to 7 days, or quit the
+   app when handling sensitive material.
+
+ * If your Mac is managed by your company, IT may block Accessibility
+   for apps that are not on their approved list. If the switch will not
+   stay on, that is why, and only IT can change it.
+
+ * If a new build is sent to you, macOS may ask for Accessibility
+   again. Remove the old SnapBoard entry in the list (select, press
+   minus) and re-add the new one.
+
+
+TO UNINSTALL
+------------
+   Quit from the menu bar icon, then:
+       rm -rf /Applications/SnapBoard.app
+       rm -rf ~/Library/Application\ Support/SnapBoard
+
+   The second line deletes your clipboard history.
+
+
+Report anything broken to Thiru.

@@ -111,14 +111,30 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         return panel
     }
 
-    /// Centres the panel on the display holding the pointer — the most reliable proxy for
-    /// "the screen the user is looking at" on a multi-monitor desk.
-    private func position(_ panel: NSPanel) {
+    /// The display to show the panel on.
+    ///
+    /// Preference order matters on a multi-monitor desk. The pointer is a poor proxy for "the
+    /// screen the user is looking at" — it is wherever it was last left, often on a different
+    /// monitor entirely, and a panel that opens over there is invisible in practice. The window
+    /// you were last *typing* in is where your eyes are, and it is also where the paste is
+    /// about to land, so it wins.
+    private func targetScreen() -> NSScreen {
+        if AccessibilityPermission.isTrusted,
+           let app = tracker.lastExternalApp,
+           let window = AXWindow.focused(of: app),
+           let frame = window.cocoaFrame {
+            return ScreenGeometry.screen(containing: frame)
+        }
+        // No Accessibility grant yet, or the app publishes no focused window: fall back to
+        // the pointer, then to the main screen.
         let mouse = NSEvent.mouseLocation
-        let screen = NSScreen.screens.first { $0.frame.contains(mouse) }
+        return NSScreen.screens.first { $0.frame.contains(mouse) }
             ?? NSScreen.main
             ?? NSScreen.screens[0]
-        let visible = screen.visibleFrame
+    }
+
+    private func position(_ panel: NSPanel) {
+        let visible = targetScreen().visibleFrame
         let size = panel.frame.size
         let origin = NSPoint(x: visible.midX - size.width / 2,
                              // Slightly above dead centre reads better than true centre.
