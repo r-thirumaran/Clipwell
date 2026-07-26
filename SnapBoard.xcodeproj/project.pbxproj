@@ -27,6 +27,7 @@
 		BDAD2DFB026C9A3389AFA65B /* HotKeyRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA731FFDFD82F03147F15A2C /* HotKeyRecorderView.swift */; };
 		C37014F8960163BC8F1EFF5E /* ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8BF00727E435CE79367010F /* ClipboardMonitor.swift */; };
 		D3883553A435C8D630DB2BBB /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A915EB3A54C04D1E8A6EE7F4 /* SettingsWindowController.swift */; };
+		D601120501F52ED048635BDE /* ScreenshotWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796587132066CB44EAA342C0 /* ScreenshotWatcher.swift */; };
 		DC9F35773EE8C7BF34DABEFE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A818B00A81202DCC53B9C3 /* AppDelegate.swift */; };
 		E75EBEB6B05AE17F14B974C5 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0397A4493D0EC1CF5C2A7E66 /* Storage.swift */; };
 		EA4F564983874D8AF04B4DD0 /* ClipItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C113C6E8F76AB9A167894CB /* ClipItem.swift */; };
@@ -44,6 +45,7 @@
 		59A498545A51CE6C7A6DBA5D /* ClipboardStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardStore.swift; sourceTree = "<group>"; };
 		5C621FB3EC45A89CB375A599 /* FrontmostAppTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontmostAppTracker.swift; sourceTree = "<group>"; };
 		77B2B01A14882ED666B762EF /* Paster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paster.swift; sourceTree = "<group>"; };
+		796587132066CB44EAA342C0 /* ScreenshotWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotWatcher.swift; sourceTree = "<group>"; };
 		8625511C511EDA2D23894446 /* FrameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameStore.swift; sourceTree = "<group>"; };
 		862C090B812B0554C4DF4688 /* AXWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXWindow.swift; sourceTree = "<group>"; };
 		8C113C6E8F76AB9A167894CB /* ClipItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipItem.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				1FD36A63A662CAB9966E9EBA /* ClipboardPanelController.swift */,
 				59A498545A51CE6C7A6DBA5D /* ClipboardStore.swift */,
 				77B2B01A14882ED666B762EF /* Paster.swift */,
+				796587132066CB44EAA342C0 /* ScreenshotWatcher.swift */,
 			);
 			path = Clipboard;
 			sourceTree = "<group>";
@@ -257,6 +260,7 @@
 				04E48D8C23803F0565A41386 /* ClipboardPanelController.swift in Sources */,
 				6FD47DF329309200FBDA8F08 /* ClipboardStore.swift in Sources */,
 				0F3E609851879397D59BE9B0 /* Paster.swift in Sources */,
+				D601120501F52ED048635BDE /* ScreenshotWatcher.swift in Sources */,
 				585C0EBA3EA2AC578DCFB6A6 /* HotKeyManager.swift in Sources */,
 				BDAD2DFB026C9A3389AFA65B /* HotKeyRecorderView.swift in Sources */,
 				5CFBD25E5FBEB97D61FE97E5 /* KeyCombo.swift in Sources */,

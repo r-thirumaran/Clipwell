@@ -227,6 +227,37 @@ These need the Accessibility grant and a human at the keyboard:
 
 ---
 
+## Screenshots
+
+macOS puts a screenshot on the clipboard **only** when you add Control:
+
+| Shortcut | What macOS does | Captured by SnapBoard |
+|---|---|---|
+| `⌃⌘⇧3` / `⌃⌘⇧4` | copies to clipboard | **yes**, automatically |
+| `⌘⇧3` / `⌘⇧4` / `⌘⇧5` | saves a file to Desktop | no — nothing reaches the clipboard |
+
+So if you want every screenshot in your history, pick one of these.
+
+**Option 1 — swap the shortcuts (no extra permission).** In System Settings ▸ Keyboard ▸
+Keyboard Shortcuts ▸ Screenshots, give *"Copy picture of selected area to the Clipboard"* the
+plain `⌘⇧4`, and move *"Save picture of selected area as a file"* to `⌃⌘⇧4`. Now your muscle
+memory copies to the clipboard and SnapBoard picks it up with no new permissions at all. The
+trade-off is that screenshots stop auto-saving to the Desktop unless you use the Control
+variant.
+
+**Option 2 — let SnapBoard watch the folder (opt-in).** Settings ▸ Clipboard ▸ Screenshots ▸
+*"watch the screenshots folder and import automatically"*. This catches `⌘⇧3`, `⌘⇧4` and `⌘⇧5`
+and still saves the file as normal.
+
+> This one asks macOS for **Files and Folders** access to your Desktop — a permission entirely
+> separate from Accessibility. It is off by default deliberately: a clipboard tool requesting
+> to read your Desktop deserves an explicit yes rather than a surprise prompt. The consent
+> dialog can also appear *behind* other windows or on another display, because SnapBoard has no
+> Dock icon to anchor it — if the status in Settings says "Waiting for permission", go looking
+> for that dialog.
+
+---
+
 ## Installing the prebuilt release
 
 Grab the `.dmg` from [Releases](https://github.com/r-thirumaran/SnapBoard/releases), drag

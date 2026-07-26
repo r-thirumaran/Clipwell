@@ -11,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let windowManager = WindowManager()
 
     private lazy var monitor = ClipboardMonitor(store: store)
+    private lazy var screenshotWatcher = ScreenshotWatcher(store: store)
     private lazy var panelController = ClipboardPanelController(store: store, tracker: tracker)
     private lazy var statusItemController = StatusItemController(store: store)
 
@@ -31,6 +32,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         panelController.monitor = monitor
         monitor.start()
 
+        // Covers ⌘⇧3/4/5, which save a file and never touch the pasteboard.
+        screenshotWatcher.monitor = monitor
+        screenshotWatcher.start()
+
         configureStatusItem()
         registerHotKeys()
         observeNotifications()
@@ -43,6 +48,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Beat the 0.5 s save debounce so a quit never loses the last copy.
         store.flush()
         monitor.stop()
+        screenshotWatcher.stop()
         retentionTimer?.cancel()
         HotKeyManager.shared.unregisterAll()
         observers.forEach { NotificationCenter.default.removeObserver($0) }
@@ -85,6 +91,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // History cap / retention may have tightened.
             self.store.enforceLimits()
             self.store.flush()
+        })
+
+        observers.append(NotificationCenter.default.addObserver(
+            forName: Preferences.screenshotSettingsDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.screenshotWatcher.restart()
         })
 
         observers.append(NotificationCenter.default.addObserver(

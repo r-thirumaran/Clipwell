@@ -43,6 +43,8 @@ final class Preferences: ObservableObject {
     static let hotKeysDidChangeNotification = Notification.Name("SnapBoardHotKeysDidChange")
     /// Everything else (history cap, retention).
     static let didChangeNotification = Notification.Name("SnapBoardPreferencesDidChange")
+    /// Screenshot watching was turned on or off — the folder watcher must restart.
+    static let screenshotSettingsDidChange = Notification.Name("SnapBoardScreenshotSettingsDidChange")
 
     private let defaults = UserDefaults.standard
 
@@ -87,6 +89,22 @@ final class Preferences: ObservableObject {
     @Published var retention: Retention {
         didSet { defaults.set(retention.rawValue, forKey: "retention"); announce() }
     }
+    /// Pull screenshots into history even when they were saved as files rather than copied.
+    /// Without this, only `⌃⌘⇧4`-style captures (which go to the pasteboard) are ever seen.
+    @Published var captureScreenshots: Bool {
+        didSet {
+            defaults.set(captureScreenshots, forKey: "captureScreenshots")
+            NotificationCenter.default.post(name: Preferences.screenshotSettingsDidChange,
+                                            object: self)
+        }
+    }
+
+    /// Also place each captured screenshot on the system pasteboard, so ⌘V pastes it straight
+    /// away. Off means it lands in SnapBoard's history only, leaving your clipboard untouched.
+    @Published var screenshotsToClipboard: Bool {
+        didSet { defaults.set(screenshotsToClipboard, forKey: "screenshotsToClipboard") }
+    }
+
     /// Milliseconds to wait after re-activating the target app before synthesizing ⌘V.
     /// Too short and the keystroke lands in the wrong process; 120 ms is comfortable on
     /// Apple silicon, but slow-launching apps may want more.
@@ -119,6 +137,12 @@ final class Preferences: ObservableObject {
         historyLimit = d.object(forKey: "historyLimit") as? Int ?? 500
         retention    = Retention(rawValue: d.string(forKey: "retention") ?? "") ?? .forever
         pasteDelayMs = d.object(forKey: "pasteDelayMs") as? Double ?? 120
+        // Off by default: enabling it makes macOS ask for Files-and-Folders access to the
+        // Desktop, and that is not a prompt a clipboard tool should spring on someone
+        // unasked. The permission-free route is remapping the screenshot shortcuts — see
+        // the README.
+        captureScreenshots     = d.object(forKey: "captureScreenshots") as? Bool ?? false
+        screenshotsToClipboard = d.object(forKey: "screenshotsToClipboard") as? Bool ?? true
         launchAtLogin = LaunchAtLogin.isEnabled
     }
 

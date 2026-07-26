@@ -7,6 +7,7 @@ struct SettingsView: View {
     @ObservedObject var store: ClipboardStore
 
     @State private var accessibilityGranted = AccessibilityPermission.isTrusted
+    @State private var screenshotStatusText = "Starting…"
 
     var body: some View {
         TabView {
@@ -20,6 +21,23 @@ struct SettingsView: View {
         .frame(width: 520, height: 440)
         .onReceive(Timer.publish(every: 2, on: .main, in: .common).autoconnect()) { _ in
             accessibilityGranted = AccessibilityPermission.isTrusted
+        }
+        .onReceive(NotificationCenter.default.publisher(
+            for: ScreenshotWatcher.statusDidChange)) { note in
+            guard let watcher = note.object as? ScreenshotWatcher else { return }
+            switch watcher.status {
+            case .off:
+                screenshotStatusText = "Off"
+            case .waitingForPermission:
+                // The TCC prompt can sit unseen behind other windows, so say so rather than
+                // leaving a spinner that looks like a hang.
+                screenshotStatusText = "Waiting for permission — look for the macOS prompt"
+            case .watching(let path):
+                screenshotStatusText = "Watching "
+                    + path.replacingOccurrences(of: NSHomeDirectory(), with: "~")
+            case .failed(let message):
+                screenshotStatusText = message
+            }
         }
     }
 
@@ -111,6 +129,55 @@ struct SettingsView: View {
                 Text("Pinned items are never evicted and never expire.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+
+            Section {
+                Label {
+                    Text("Screenshots taken with **⌃⌘⇧4** (with Control) go to the clipboard "
+                         + "and are captured already — no setting needed.\n\nPlain ⌘⇧4 saves a "
+                         + "file instead and never touches the clipboard. To capture those "
+                         + "without granting any extra permission, swap the two shortcuts in "
+                         + "System Settings ▸ Keyboard ▸ Keyboard Shortcuts ▸ Screenshots.")
+                } icon: {
+                    Image(systemName: "info.circle").foregroundStyle(Color.accentColor)
+                }
+                .font(.caption)
+                .fixedSize(horizontal: false, vertical: true)
+
+                Button("Open Keyboard Shortcuts…") {
+                    NSWorkspace.shared.open(URL(string:
+                        "x-apple.systempreferences:com.apple.preference.keyboard?Shortcuts")!)
+                }
+
+                Divider()
+
+                Toggle("Or: watch the screenshots folder and import automatically",
+                       isOn: $preferences.captureScreenshots)
+                if preferences.captureScreenshots {
+                    Toggle("Also copy each screenshot to the clipboard",
+                           isOn: $preferences.screenshotsToClipboard)
+                    HStack(alignment: .top) {
+                        Text("Status")
+                        Spacer()
+                        Text(screenshotStatusText)
+                            .foregroundStyle(.secondary)
+                            .font(.system(size: 11))
+                            .multilineTextAlignment(.trailing)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            } header: {
+                Text("Screenshots")
+            } footer: {
+                if preferences.captureScreenshots {
+                    Text("Watching the folder needs permission to read "
+                         + ScreenshotWatcher.screenshotDirectory().lastPathComponent
+                         + " — macOS will ask once. If you never see the prompt, look for it "
+                         + "behind other windows or on another display; it can appear without "
+                         + "bringing itself to the front.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Section {
