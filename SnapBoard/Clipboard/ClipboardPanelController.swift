@@ -88,7 +88,12 @@ final class ClipboardPanelController: NSObject, NSWindowDelegate {
         panel.level = .floating
         panel.titleVisibility = .hidden
         panel.titlebarAppearsTransparent = true
-        panel.isMovableByWindowBackground = true
+        // Must stay false. With `.fullSizeContentView` the SwiftUI content covers the whole
+        // window, and a movable-by-background window treats clicks on anything AppKit
+        // considers "background" as the start of a window drag — swallowing them before they
+        // reach the rows. That is what made the list unclickable while the keyboard still
+        // worked. The panel is transient and self-centring, so it does not need dragging.
+        panel.isMovableByWindowBackground = false
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
         panel.animationBehavior = .utilityWindow

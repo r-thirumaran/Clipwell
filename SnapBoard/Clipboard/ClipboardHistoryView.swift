@@ -12,6 +12,13 @@ final class ClipboardPanelModel: ObservableObject {
     @Published var searchText: String = ""
     @Published var selectedIndex: Int = 0
 
+    /// Bumped only by keyboard navigation.
+    ///
+    /// The list scrolls in response to *this*, never to `selectedIndex` directly. Scrolling on
+    /// every selection change meant the view yanked itself around whenever the selection moved
+    /// for any reason — the pointer must never make the list scroll itself.
+    @Published private(set) var keyboardScrollTick: Int = 0
+
     @Published private(set) var pinned: [ClipItem] = []
     @Published private(set) var recents: [ClipItem] = []
 
@@ -62,6 +69,7 @@ final class ClipboardPanelModel: ObservableObject {
     func moveSelection(by delta: Int) {
         guard !visible.isEmpty else { return }
         selectedIndex = (selectedIndex + delta).clamped(to: 0...(visible.count - 1))
+        keyboardScrollTick += 1
     }
 
     func togglePinSelected() {
@@ -165,7 +173,11 @@ struct ClipboardHistoryView: View {
                 .padding(.vertical, 6)
                 .padding(.horizontal, 8)
             }
-            .onChange(of: model.selectedIndex) { _, index in
+            // Keyed to the keyboard tick, not to `selectedIndex`: scrolling belongs to ↑/↓
+            // only. The user scrolls with the wheel and clicks what they want; the view must
+            // never move under their pointer.
+            .onChange(of: model.keyboardScrollTick) { _, _ in
+                let index = model.selectedIndex
                 guard model.visible.indices.contains(index) else { return }
                 withAnimation(.easeOut(duration: 0.12)) {
                     proxy.scrollTo(model.visible[index].id, anchor: .center)
@@ -183,19 +195,27 @@ struct ClipboardHistoryView: View {
             .padding(.bottom, 2)
     }
 
+    /// One row.
+    ///
+    /// A `Button` rather than tap gestures, deliberately. Stacking `.onTapGesture(count: 2)`
+    /// and `.onTapGesture()` makes SwiftUI arbitrate between them, and inside this panel the
+    /// result was that *neither* fired — rows were completely unclickable. A button's hit
+    /// testing is unambiguous and works the same whether or not the panel is key.
+    ///
+    /// A single click pastes, matching Windows' Win+V and the `↩` shortcut. The hover
+    /// highlight makes it obvious what a click is about to act on.
     private func row(_ item: ClipItem, index: Int) -> some View {
-        ClipRowView(item: item,
-                    store: model.store,
-                    isSelected: index == model.selectedIndex)
+        Button {
+            model.selectedIndex = index
+            onPaste(false)
+        } label: {
+            ClipRowView(item: item,
+                        store: model.store,
+                        isSelected: index == model.selectedIndex)
+                .contentShape(Rectangle())
+        }
+            .buttonStyle(.plain)
             .id(item.id)
-            .contentShape(Rectangle())
-            .onTapGesture(count: 2) {
-                model.selectedIndex = index
-                onPaste(false)
-            }
-            .onTapGesture {
-                model.selectedIndex = index
-            }
             .contextMenu {
                 Button(item.isPinned ? "Unpin" : "Pin") {
                     model.selectedIndex = index
@@ -233,7 +253,7 @@ struct ClipboardHistoryView: View {
 
     private var footer: some View {
         HStack(spacing: 12) {
-            hint("↩", "Paste")
+            hint("Click", "Paste")
             hint("⇧↩", "Plain")
             hint("⌘P", "Pin")
             hint("⌘⌫", "Delete")
@@ -269,6 +289,10 @@ private struct ClipRowView: View {
     let store: ClipboardStore
     let isSelected: Bool
 
+    /// Purely cosmetic, and deliberately local to the row: hovering shows what a click would
+    /// hit without touching the model's selection, so the pointer never causes a scroll.
+    @State private var isHovered = false
+
     private static let relativeFormatter: RelativeDateTimeFormatter = {
         let f = RelativeDateTimeFormatter()
         f.unitsStyle = .abbreviated
@@ -298,9 +322,11 @@ private struct ClipRowView: View {
         .padding(.vertical, 6)
         .background(
             RoundedRectangle(cornerRadius: 6)
-                .fill(isSelected ? Color.accentColor : Color.clear)
+                .fill(isSelected ? Color.accentColor
+                      : (isHovered ? Color.primary.opacity(0.08) : Color.clear))
         )
         .foregroundStyle(isSelected ? Color.white : Color.primary)
+        .onHover { isHovered = $0 }
     }
 
     /// Source app icon when we know it, falling back to a glyph for the payload kind.
