@@ -49,6 +49,7 @@ swiftc \
   "${SOURCES[@]}"
 
 cp "$ROOT/Support/Info.plist" "$APP/Contents/Info.plist"
+cp "$ROOT/Support/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 printf 'APPL????' > "$APP/Contents/PkgInfo"
 
 # Ad-hoc signature. A real identity would be better — see README, "Rebuilds and the

@@ -1,3 +1,5 @@
+<img src="assets/icon.png" width="128" align="left" alt="Clipwell icon">
+
 # Clipwell — window snapping and clipboard history for macOS
 
 [![Download](https://img.shields.io/github/v/release/r-thirumaran/Clipwell?label=download&style=flat-square)](https://github.com/r-thirumaran/Clipwell/releases/latest)
@@ -21,6 +23,8 @@ things you copied instead of just the last one, that is what this is for.
 
 **[⬇︎ Download the latest release](https://github.com/r-thirumaran/Clipwell/releases/latest)**
 · [Install notes](#installing-the-prebuilt-release) · [Build from source](#build-and-install)
+
+<br clear="left">
 
 ---
 

@@ -11,3 +11,6 @@ xcuserdata/
 
 # macOS
 .DS_Store
+
+# Generated icon intermediates (assets/ and Support/AppIcon.icns ARE committed)
+build/AppIcon.iconset/

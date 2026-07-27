@@ -121,11 +121,26 @@ def main():
         f'\t\t{plist_ref} /* Info.plist */ = {{isa = PBXFileReference; '
         f'lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; }};'
     )
+    # App icon: a file reference AND a build file, because unlike Info.plist it has to be
+    # copied into Contents/Resources rather than processed.
+    icon_ref = uid("fileRef:appicon")
+    icon_build = uid("buildFile:appicon")
+    file_refs.append(
+        f'\t\t{icon_ref} /* AppIcon.icns */ = {{isa = PBXFileReference; '
+        f'lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; }};'
+    )
+    build_files.append(
+        f'\t\t{icon_build} /* AppIcon.icns in Resources */ = {{isa = PBXBuildFile; '
+        f'fileRef = {icon_ref} /* AppIcon.icns */; }};'
+    )
     support_group_id = uid("group:support")
     groups.append(
         f'\t\t{support_group_id} /* Support */ = {{\n'
         f'\t\t\tisa = PBXGroup;\n'
-        f'\t\t\tchildren = (\n\t\t\t\t{plist_ref} /* Info.plist */,\n\t\t\t);\n'
+        f'\t\t\tchildren = (\n'
+        f'\t\t\t\t{plist_ref} /* Info.plist */,\n'
+        f'\t\t\t\t{icon_ref} /* AppIcon.icns */,\n'
+        f'\t\t\t);\n'
         f'\t\t\tpath = Support;\n'
         f'\t\t\tsourceTree = "<group>";\n'
         f'\t\t}};'
@@ -303,6 +318,7 @@ def main():
 \t\t\tisa = PBXResourcesBuildPhase;
 \t\t\tbuildActionMask = 2147483647;
 \t\t\tfiles = (
+\t\t\t\t{icon_build} /* AppIcon.icns in Resources */,
 \t\t\t);
 \t\t\trunOnlyForDeploymentPostprocessing = 0;
 \t\t}};
