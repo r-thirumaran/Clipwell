@@ -206,8 +206,12 @@ Accessibility permission is used only to move windows and to press ⌘V.
 - **`⌫` in the panel is overloaded.** The spec asked for `Delete` = remove, but `⌫` also has to
   edit the search field. It deletes the selected item only when unambiguous: the search field is
   empty, or `⌘` is held. Forward-delete (`⌦`) always deletes.
-- **Mouse:** single click selects, double click pastes. Single-click-to-paste made stray clicks
-  destructive.
+- **Mouse:** a single click pastes, matching `↩` and Windows' Win+V. Rows are `Button`s rather
+  than tap-gesture modifiers — stacking `.onTapGesture(count: 2)` and `.onTapGesture()` makes
+  SwiftUI arbitrate between them and drop both, which made the list entirely unclickable.
+- **Hovering never changes the selection.** It only draws a highlight. Driving selection from
+  hover meant the scroll-to-selection handler fired as the pointer moved, so the list scrolled
+  itself out from under the mouse.
 - **`ClipItem.imagePNGData` is a computed accessor**, not a stored property — see the image
   storage note above. `hasImage` is what gets persisted.
 - **⌘+Arrow mode adds bindings rather than replacing them**, so `⌃⌘←` keeps working when it is on.
