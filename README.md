@@ -1,14 +1,65 @@
-# Clipwell
+# Clipwell — window snapping and clipboard history for macOS
 
-A menu-bar-only macOS utility that brings two things over from Windows:
+[![Download](https://img.shields.io/github/v/release/r-thirumaran/Clipwell?label=download&style=flat-square)](https://github.com/r-thirumaran/Clipwell/releases/latest)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![Platform](https://img.shields.io/badge/macOS-15%2B-lightgrey?style=flat-square)](#requirements)
+[![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen?style=flat-square)](#how-it-works)
 
-- **Window snapping** with Windows semantics — halves, maximize, `Win+Down`-style
-  restore-or-minimize, and Windows 11 multi-display cycling.
-- **Clipboard history** — a `Win+V` replacement that survives reboots.
+**A free, open-source macOS app that brings two things Windows gets right over to the Mac:
+Aero Snap window tiling, and `Win+V` clipboard history.** It lives in the menu bar, has no Dock
+icon, and uses no third-party code at all.
 
-macOS 15+, Apple silicon and Intel. Swift 5, AppKit + SwiftUI. **Zero third-party
-dependencies** — AppKit, SwiftUI, Carbon, ApplicationServices, ServiceManagement, CryptoKit,
-Combine.
+If you have ever pressed `Win+Left` on a Mac and had nothing happen, or wanted the last ten
+things you copied instead of just the last one, that is what this is for.
+
+```
+⌃⌘←  snap left half        ⌘⇧V  clipboard history
+⌃⌘→  snap right half            search it, arrow through it, Return to paste
+⌃⌘↑  maximize
+⌃⌘↓  restore, or minimize
+```
+
+**[⬇︎ Download the latest release](https://github.com/r-thirumaran/Clipwell/releases/latest)**
+· [Install notes](#installing-the-prebuilt-release) · [Build from source](#build-and-install)
+
+---
+
+## What it does
+
+**Window snapping — Windows semantics, not macOS tiling.**
+Halves, maximize to the screen's usable area (*not* a macOS full-screen Space, which is a
+different and more annoying thing), and `Win+Down`-style restore-or-minimize. Press left or
+right again on an already-snapped window and it walks to your next display, exactly as
+Windows 11 does. Restore returns the window to the precise frame it had before you touched it.
+
+**Clipboard history that survives reboots.**
+Text, rich text, images and files. Search as you type, pin the things you paste constantly,
+and paste with `Return` or a click — Clipwell re-activates the app you were in and presses
+`⌘V` for you. Unlike Spotlight's clipboard, history is on disk and is still there tomorrow.
+
+**It refuses to record your passwords.**
+Items marked `org.nspasteboard.ConcealedType` — what password managers set — are skipped
+outright, along with transient and auto-generated pasteboard data.
+
+**Nothing leaves your Mac.** No network code, no telemetry, no account. The Accessibility
+permission is used for exactly two things: moving windows, and pressing `⌘V` for you.
+
+## Why another one of these
+
+Most Mac window managers are either paid, subscription-based, or bundled into a much larger
+launcher. Most clipboard managers are separate apps again. Clipwell is one small menu bar
+utility that does both, is MIT licensed, and has **zero third-party dependencies** — it is
+AppKit, SwiftUI, Carbon, ApplicationServices, ServiceManagement, CryptoKit and Combine, all
+first-party. The whole thing is ~25 Swift files you can read in an afternoon.
+
+If you already use Rectangle, Magnet, Maccy or Raycast and are happy, you do not need this.
+It exists for people who want both features, in one place, for free, with the source in front
+of them.
+
+## Requirements
+
+macOS 15 (Sequoia) or later. Universal binary — Apple silicon and Intel. Needs the
+Accessibility permission; nothing snaps or pastes without it.
 
 ---
 
