@@ -75,44 +75,45 @@ an occasional re-grant. It does not scale past that, and it will make the app lo
 Recipients just drag and go. No Terminal. No quarantine step. No "damaged" dialog. Permission
 grants persist across updates because the signature is stable.
 
+This is fully wired up in the Makefile. Check where you stand:
+
+```bash
+make notary-setup
+```
+
+It prints the remaining steps and reports whether the certificate and credentials are present.
+
 **One-time setup**
 
 1. Join the Apple Developer Program (~$99/yr, ~24–48 h to activate).
-2. Xcode ▸ Settings ▸ Accounts ▸ Manage Certificates ▸ **+** ▸ *Developer ID Application*.
-3. Create an app-specific password at appleid.apple.com, then store credentials:
+2. Xcode ▸ Settings ▸ Accounts ▸ *your Apple ID* ▸ Manage Certificates ▸ **+** ▸
+   *Developer ID Application*. This is the step people miss: **membership alone does not put a
+   certificate on your Mac.** Verify with `security find-identity -v -p codesigning`.
+3. Create an *app-specific password* at appleid.apple.com (Sign-In and Security ▸ App-Specific
+   Passwords) — not your Apple ID password. Then store it, **running this yourself** so the
+   password never passes through a script or a repo:
 
 ```bash
 xcrun notarytool store-credentials snapboard-notary \
-  --apple-id you@example.com --team-id YOURTEAMID --password app-specific-password
+  --apple-id you@example.com --team-id YOURTEAMID
 ```
-
-**Required build change.** Notarisation requires the hardened runtime, which is currently off:
-
-```
-ENABLE_HARDENED_RUNTIME = YES
-```
-
-Set it in `Tools/generate_xcodeproj.py` (`shared_target_settings`) and re-run
-`make project`. The hardened runtime does **not** interfere with Accessibility or
-`CGEvent` posting — those are gated by TCC, not by entitlements, so no extra entitlement is
-needed.
 
 **Per release**
 
 ```bash
-codesign --force --deep --options runtime \
-  --sign "Developer ID Application: Your Name (TEAMID)" build/SnapBoard.app
-
-make dmg
-xcrun notarytool submit build/SnapBoard-1.0.dmg --keychain-profile snapboard-notary --wait
-xcrun stapler staple build/SnapBoard-1.0.dmg     # lets it validate offline
+make notarized-dmg
 ```
 
-Check where you stand at any time:
+That builds with the Developer ID certificate and the hardened runtime, packages the disk
+image, signs the image, submits it to Apple, waits for the ticket, staples it so it validates
+offline, and verifies the result the way Gatekeeper will see it.
 
-```bash
-make signing-status
-```
+The hardened runtime does **not** interfere with Accessibility or `CGEvent` posting — those are
+gated by TCC, not by entitlements, so no extra entitlement is required.
+
+Note the committed Xcode project deliberately stays **ad-hoc** signed: signing settings are
+applied as `xcodebuild` overrides, so anyone can clone and `make install` with no Apple account,
+and there is nothing to remember to revert before committing.
 
 ---
 
