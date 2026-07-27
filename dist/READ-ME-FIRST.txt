@@ -1,33 +1,61 @@
-SnapBoard — install in 3 steps
-==============================
+SnapBoard — install
+===================
 
 Windows-style window snapping + clipboard history for macOS 15 or later.
 
 
-1. DRAG SnapBoard onto the Applications folder in this window.
+┌──────────────────────────────────────────────────────────────────┐
+│  EXPECT THIS ERROR. IT IS NORMAL. NOTHING IS WRONG.              │
+│                                                                  │
+│    "Apple could not verify SnapBoard is free of malware that     │
+│     may harm your Mac or compromise your privacy."               │
+│                                                                  │
+│  or  "SnapBoard is damaged and can't be opened."                 │
+│                                                                  │
+│  macOS says this about ANY app that has not been through         │
+│  Apple's paid notarisation service ($99/year). SnapBoard is a    │
+│  free tool signed with a self-made signature, so macOS cannot    │
+│  look it up. Step 2 below is how you get past it.                │
+└──────────────────────────────────────────────────────────────────┘
 
 
-2. OPEN TERMINAL AND RUN THIS ONE LINE:
-
-       xattr -dr com.apple.quarantine /Applications/SnapBoard.app
-
-   This is NOT optional. SnapBoard is signed with an ad-hoc signature
-   (an internal test build, not a paid Apple Developer certificate).
-   Without this line macOS says "SnapBoard is damaged and can't be
-   opened" — that is Gatekeeper wording it badly. The app is fine.
+STEP 1 — DRAG SnapBoard onto the Applications folder in this window.
 
 
-3. LAUNCH IT, THEN GRANT ACCESSIBILITY.
+STEP 2 — GET PAST GATEKEEPER. Pick whichever you prefer.
 
-       open /Applications/SnapBoard.app
+  EASIER — Terminal (one line, takes a second):
 
-   A setup window appears with a button through to the right settings
-   pane. Turn ON the switch next to SnapBoard.
+      xattr -dr com.apple.quarantine /Applications/SnapBoard.app
 
-   The setup window closes by itself once it works.
+      Open Terminal from Spotlight (Cmd+Space, type "Terminal"),
+      paste that line, press Return. No output means it worked.
+      Now open SnapBoard normally.
 
-   Nothing snaps or pastes until this is granted — the app cannot move
-   another app's window without it.
+  NO TERMINAL — System Settings:
+
+      a. Double-click SnapBoard. You get the error above. Click Done.
+      b. Open System Settings > Privacy & Security.
+      c. Scroll down to the "Security" section. You will see a line
+         about SnapBoard being blocked.
+      d. Click "Open Anyway", then confirm.
+
+      NOTE: on macOS 15 and later, right-clicking the app and
+      choosing Open NO LONGER works. Apple removed that shortcut.
+      Use one of the two methods above.
+
+
+STEP 3 — GRANT ACCESSIBILITY.
+
+      open /Applications/SnapBoard.app
+
+  A setup window appears with a button through to the right pane.
+  Turn ON the switch next to SnapBoard.
+
+  The setup window closes by itself once it works.
+
+  Nothing snaps or pastes until this is granted — the app cannot
+  move another app's window without permission.
 
 
 HOW TO USE IT
@@ -37,34 +65,46 @@ HOW TO USE IT
    Control+Command+Up       maximize
    Control+Command+Down     restore, or minimize
 
+   (Control is the ^ key, not Shift.)
+
    Press Left/Right again on an already-snapped window to send it to
    your next monitor.
 
    Command+Shift+V          clipboard history
-     type to search, arrows to move, Return to paste,
+     type to search, arrows to move, click or Return to paste,
      Shift+Return pastes as plain text, Command+P pins, Esc closes
 
-   Screenshots land in history if you use CONTROL+Command+Shift+4
-   (with Control, they go to the clipboard). Plain Command+Shift+4
-   saves a file to the Desktop instead and will not be captured.
+   Screenshots: Control+Command+Shift+4 copies to the clipboard and
+   is captured automatically. Plain Command+Shift+4 saves a file to
+   the Desktop instead and is NOT captured — see the README for how
+   to change that.
 
 
-THINGS TO KNOW BEFORE YOU RUN THIS ON A WORK MACHINE
-----------------------------------------------------
+IF YOU UPDATE TO A NEWER BUILD LATER
+------------------------------------
+  macOS ties the Accessibility permission to the app's signature,
+  and that signature changes with every build. After installing a
+  new version, snapping may silently stop working. Fix it by
+  removing SnapBoard from the Accessibility list (select it, press
+  the minus button) and adding the new copy — or run:
+
+      tccutil reset Accessibility com.thiru.snapboard
+
+  then re-grant it.
+
+
+THINGS TO KNOW BEFORE RUNNING THIS ON A WORK MACHINE
+-----------------------------------------------------
  * Clipboard history is stored UNENCRYPTED as plain JSON at
      ~/Library/Application Support/SnapBoard/history.json
-   Everything you copy goes in there, including anything you paste out
-   of a password vault that does not mark itself as concealed. Check
-   your company policy. You can set retention to 7 days, or quit the
-   app when handling sensitive material.
+   Everything you copy goes in there, including anything you paste
+   out of a password vault that does not mark itself as concealed.
+   Check your company policy. You can set retention to 7 days in
+   Settings, or quit the app when handling sensitive material.
 
  * If your Mac is managed by your company, IT may block Accessibility
-   for apps that are not on their approved list. If the switch will not
-   stay on, that is why, and only IT can change it.
-
- * If a new build is sent to you, macOS may ask for Accessibility
-   again. Remove the old SnapBoard entry in the list (select, press
-   minus) and re-add the new one.
+   for apps not on their approved list. If the switch will not stay
+   on, that is why, and only IT can change it.
 
 
 TO UNINSTALL
@@ -76,4 +116,5 @@ TO UNINSTALL
    The second line deletes your clipboard history.
 
 
-Report anything broken to Thiru.
+Source, issues and newer builds:
+   https://github.com/r-thirumaran/SnapBoard

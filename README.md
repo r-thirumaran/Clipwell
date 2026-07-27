@@ -260,18 +260,36 @@ and still saves the file as normal.
 
 ## Installing the prebuilt release
 
-Grab the `.dmg` from [Releases](https://github.com/r-thirumaran/SnapBoard/releases), drag
-SnapBoard to Applications, then — **this step is required**:
+Grab the `.dmg` from [Releases](https://github.com/r-thirumaran/SnapBoard/releases) and drag
+SnapBoard to Applications.
+
+### macOS will refuse to open it. This is expected.
+
+You will see one of:
+
+> **"Apple could not verify "SnapBoard" is free of malware that may harm your Mac or
+> compromise your privacy."**
+>
+> **"SnapBoard is damaged and can't be opened."**
+
+Neither means anything is wrong with the app. macOS says this about *any* app that has not been
+through Apple's paid notarisation service ($99/yr); SnapBoard is ad-hoc signed, so there is
+nothing for Gatekeeper to look up. Get past it either way:
 
 ```bash
 xattr -dr com.apple.quarantine /Applications/SnapBoard.app
 ```
 
-Release builds are **ad-hoc signed**, not notarised (that needs a paid Apple Developer account).
-Without the command above macOS says *"SnapBoard is damaged and can't be opened"* — that is
-Gatekeeper refusing an unsigned download, not a corrupted file. If you would rather not trust a
-binary from a stranger on the internet, build it yourself; it takes one command and no
-dependencies:
+or, without Terminal: try to open the app once, dismiss the error, then go to **System Settings
+▸ Privacy & Security**, scroll to **Security**, and click **Open Anyway** next to the SnapBoard
+message.
+
+> On macOS 15 and later, right-click ▸ Open **no longer bypasses this** — Apple removed that
+> shortcut. Use one of the two methods above.
+
+If you would rather not trust a binary from a stranger on the internet — entirely reasonable —
+build it yourself. One command, no dependencies, and the result is signed on your own machine
+so Gatekeeper never complains:
 
 ```bash
 git clone https://github.com/r-thirumaran/SnapBoard.git && cd SnapBoard && make install
