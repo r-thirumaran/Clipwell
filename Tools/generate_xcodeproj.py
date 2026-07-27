@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Regenerates SnapBoard.xcodeproj from whatever Swift files are on disk.
+Regenerates Clipwell.xcodeproj from whatever Swift files are on disk.
 
 The generated project is *committed to the repo* — you do not need Python or this script to
-build SnapBoard. It exists only so that adding or moving a source file does not mean
+build Clipwell. It exists only so that adding or moving a source file does not mean
 hand-editing a pbxproj: run this, and the project catches up.
 
 Everything is written with deterministic IDs (md5 of the object's path/role), so regenerating
@@ -18,10 +18,10 @@ import hashlib
 import os
 import sys
 
-PROJECT_NAME = "SnapBoard"
-BUNDLE_ID = "com.thiru.snapboard"
+PROJECT_NAME = "Clipwell"
+BUNDLE_ID = "com.thiru.clipwell"
 DEPLOYMENT_TARGET = "15.0"
-SOURCE_ROOT = "SnapBoard"          # directory holding the Swift sources
+SOURCE_ROOT = "Clipwell"          # directory holding the Swift sources
 INFOPLIST = "Support/Info.plist"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -78,7 +78,7 @@ def main():
         group_children[rel_dir] = child_ids
 
     # --- groups ------------------------------------------------------------------------
-    # One group per source subdirectory (App/, Clipboard/, ...), all under a SnapBoard group.
+    # One group per source subdirectory (App/, Clipboard/, ...), all under a Clipwell group.
     subgroup_ids = []
     for rel_dir in sorted(k for k in group_children if k != "."):
         gid = uid("group:" + rel_dir)

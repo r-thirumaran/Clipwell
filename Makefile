@@ -1,4 +1,4 @@
-# SnapBoard — build, test and install.
+# Clipwell — build, test and install.
 #
 # Two build paths, same output bundle:
 #   * `xcodebuild` when a full Xcode is installed (the path the project was specified around)
@@ -6,8 +6,8 @@
 #
 # `make build` picks whichever is available, so neither is a prerequisite for the other.
 
-APP_NAME    := SnapBoard
-BUNDLE_ID   := com.thiru.snapboard
+APP_NAME    := Clipwell
+BUNDLE_ID   := com.thiru.clipwell
 BUILD_DIR   := build
 APP         := $(BUILD_DIR)/$(APP_NAME).app
 INSTALL_DIR := /Applications
@@ -18,7 +18,7 @@ HAS_XCODE := $(shell xcodebuild -version >/dev/null 2>&1 && echo yes)
 
 .PHONY: help
 help:
-	@echo "SnapBoard"
+	@echo "Clipwell"
 	@echo ""
 	@echo "  make build      Build $(APP_NAME).app into ./$(BUILD_DIR)"
 	@echo "  make install    Build and install to $(INSTALL_DIR)"
@@ -63,7 +63,7 @@ project:
 
 .PHONY: install
 install: build stop
-	@# Only ever replace a bundle that is actually SnapBoard — never blindly rm -rf a path
+	@# Only ever replace a bundle that is actually Clipwell — never blindly rm -rf a path
 	@# under /Applications.
 	@if [ -e "$(INSTALLED)" ]; then \
 		existing=$$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' \
@@ -82,15 +82,15 @@ install: build stop
 	@echo "  │  One more step: grant Accessibility access                            │"
 	@echo "  └──────────────────────────────────────────────────────────────────────┘"
 	@echo ""
-	@echo "  SnapBoard cannot move windows or paste for you until macOS allows it."
+	@echo "  Clipwell cannot move windows or paste for you until macOS allows it."
 	@echo ""
-	@echo "    1. Open SnapBoard:      open $(INSTALLED)"
+	@echo "    1. Open Clipwell:      open $(INSTALLED)"
 	@echo "    2. It opens a setup window with a button to the right settings pane."
 	@echo "       (Or go there directly: System Settings > Privacy & Security >"
 	@echo "        Accessibility.)"
-	@echo "    3. Turn ON the switch next to SnapBoard."
+	@echo "    3. Turn ON the switch next to Clipwell."
 	@echo ""
-	@echo "  If SnapBoard is ALREADY in that list from an earlier build, select it,"
+	@echo "  If Clipwell is ALREADY in that list from an earlier build, select it,"
 	@echo "  press '-' to remove it, then add the new copy. macOS ties the permission"
 	@echo "  to the code signature, and an ad-hoc signature changes on every rebuild."
 	@echo ""
@@ -125,7 +125,7 @@ clean:
 # ---------------------------------------------------------------------------- distribution
 
 VERSION := $(shell /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Support/Info.plist)
-DMG     := $(BUILD_DIR)/SnapBoard-$(VERSION).dmg
+DMG     := $(BUILD_DIR)/Clipwell-$(VERSION).dmg
 STAGE   := $(BUILD_DIR)/dmg-stage
 
 ## Build a drag-to-install disk image for sharing with other people.
@@ -136,13 +136,13 @@ dmg: build
 	@cp -R "$(APP)" "$(STAGE)/"
 	@ln -s /Applications "$(STAGE)/Applications"
 	@cp dist/READ-ME-FIRST.txt "$(STAGE)/" 2>/dev/null || true
-	@hdiutil create -volname "SnapBoard $(VERSION)" -srcfolder "$(STAGE)" \
+	@hdiutil create -volname "Clipwell $(VERSION)" -srcfolder "$(STAGE)" \
 		-ov -format UDZO "$(DMG)" >/dev/null
 	@rm -rf "$(STAGE)"
 	@echo "==> $(DMG)  ($$(du -h '$(DMG)' | cut -f1))"
 	@echo ""
 	@echo "    Ad-hoc signed. Recipients MUST run this after copying to /Applications:"
-	@echo "      xattr -dr com.apple.quarantine /Applications/SnapBoard.app"
+	@echo "      xattr -dr com.apple.quarantine /Applications/Clipwell.app"
 	@echo "    See dist/DISTRIBUTION.md for the Developer ID path that removes that step."
 
 # ------------------------------------------------------- Developer ID + notarisation
@@ -160,8 +160,8 @@ dmg: build
 SIGN_IDENTITY  ?= $(shell security find-identity -v -p codesigning 2>/dev/null \
                     | grep "Developer ID Application" | head -1 \
                     | sed -E 's/.*"(.*)".*/\1/')
-NOTARY_PROFILE ?= snapboard-notary
-SIGNED_DMG     := $(BUILD_DIR)/SnapBoard-$(VERSION).dmg
+NOTARY_PROFILE ?= clipwell-notary
+SIGNED_DMG     := $(BUILD_DIR)/Clipwell-$(VERSION).dmg
 
 ## Print the exact one-time setup commands. Run them yourself — they involve your password.
 .PHONY: notary-setup
@@ -232,7 +232,7 @@ notarized-dmg: signed-build
 	@cp -R "$(APP)" "$(STAGE)/"
 	@ln -s /Applications "$(STAGE)/Applications"
 	@cp dist/READ-ME-FIRST.txt "$(STAGE)/" 2>/dev/null || true
-	@hdiutil create -volname "SnapBoard $(VERSION)" -srcfolder "$(STAGE)" \
+	@hdiutil create -volname "Clipwell $(VERSION)" -srcfolder "$(STAGE)" \
 		-ov -format UDZO "$(SIGNED_DMG)" >/dev/null
 	@rm -rf "$(STAGE)"
 	@echo "==> Signing the disk image itself"

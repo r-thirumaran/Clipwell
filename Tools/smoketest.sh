@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# End-to-end smoke test for the clipboard half of SnapBoard.
+# End-to-end smoke test for the clipboard half of Clipwell.
 #
 # Covers the acceptance criteria that can be checked without a human at the keyboard:
 #   * a copy appears in history within 0.5 s
@@ -14,9 +14,9 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP="$ROOT/build/SnapBoard.app"
-BIN="$APP/Contents/MacOS/SnapBoard"
-SUPPORT="$HOME/Library/Application Support/SnapBoard"
+APP="$ROOT/build/Clipwell.app"
+BIN="$APP/Contents/MacOS/Clipwell"
+SUPPORT="$HOME/Library/Application Support/Clipwell"
 HISTORY="$SUPPORT/history.json"
 LOG="$ROOT/build/smoketest.log"
 
@@ -52,7 +52,7 @@ ok "app launched and stayed running (pid $APP_PID)"
 
 # ---------------------------------------------------------------- capture latency
 echo "==> Capture"
-MARKER="snapboard-smoketest-$$-$(date +%s)"
+MARKER="clipwell-smoketest-$$-$(date +%s)"
 printf '%s' "$MARKER" | pbcopy
 sleep 0.5
 if [[ -f "$HISTORY" ]] && grep -q "$MARKER" "$HISTORY"; then
@@ -69,7 +69,7 @@ fi
 
 # ---------------------------------------------------------------- privacy filter
 echo "==> Privacy (org.nspasteboard.ConcealedType)"
-SECRET="snapboard-secret-$$-should-never-persist"
+SECRET="clipwell-secret-$$-should-never-persist"
 cat > "$ROOT/build/conceal.swift" <<SWIFT
 import AppKit
 let pb = NSPasteboard.general
@@ -153,10 +153,10 @@ else
 fi
 
 ACTIVATION=$(osascript -e 'tell application "System Events" to get (name of every process whose background only is false)' 2>/dev/null)
-if echo "$ACTIVATION" | grep -q "SnapBoard"; then
-  bad "SnapBoard appears as a foreground (Dock) app"
+if echo "$ACTIVATION" | grep -q "Clipwell"; then
+  bad "Clipwell appears as a foreground (Dock) app"
 else
-  ok "SnapBoard does not appear as a foreground app"
+  ok "Clipwell does not appear as a foreground app"
 fi
 
 echo

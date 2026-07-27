@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Builds SnapBoard.app using only the Command Line Tools (swiftc + codesign).
+# Builds Clipwell.app using only the Command Line Tools (swiftc + codesign).
 #
-# This exists because `xcodebuild` requires a full Xcode install, and SnapBoard needs no
+# This exists because `xcodebuild` requires a full Xcode install, and Clipwell needs no
 # Xcode-specific build machinery: no asset catalogs, no storyboards, no code generation —
 # just Swift sources, an Info.plist and an ad-hoc signature. The .xcodeproj in the repo is
 # the equivalent path once Xcode is installed; both produce the same bundle.
@@ -14,7 +14,7 @@ set -euo pipefail
 CONFIG="${1:-release}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="$ROOT/build"
-APP="$BUILD_DIR/SnapBoard.app"
+APP="$BUILD_DIR/Clipwell.app"
 DEPLOYMENT_TARGET="15.0"
 
 SDK="$(xcrun --show-sdk-path --sdk macosx)"
@@ -26,16 +26,16 @@ case "$CONFIG" in
   *) echo "usage: $0 [debug|release]" >&2; exit 2 ;;
 esac
 
-echo "==> Building SnapBoard ($CONFIG, $ARCH, deployment target $DEPLOYMENT_TARGET)"
+echo "==> Building Clipwell ($CONFIG, $ARCH, deployment target $DEPLOYMENT_TARGET)"
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
-# Every .swift under SnapBoard/ is a source file; there is no exclusion list to keep in sync.
+# Every .swift under Clipwell/ is a source file; there is no exclusion list to keep in sync.
 SOURCES=()
 while IFS= read -r -d '' file; do
   SOURCES+=("$file")
-done < <(find "$ROOT/SnapBoard" -name '*.swift' -print0 | sort -z)
+done < <(find "$ROOT/Clipwell" -name '*.swift' -print0 | sort -z)
 
 echo "    ${#SOURCES[@]} source files"
 
@@ -44,8 +44,8 @@ swiftc \
   -swift-version 5 \
   -target "${ARCH}-apple-macos${DEPLOYMENT_TARGET}" \
   -sdk "$SDK" \
-  -module-name SnapBoard \
-  -o "$APP/Contents/MacOS/SnapBoard" \
+  -module-name Clipwell \
+  -o "$APP/Contents/MacOS/Clipwell" \
   "${SOURCES[@]}"
 
 cp "$ROOT/Support/Info.plist" "$APP/Contents/Info.plist"

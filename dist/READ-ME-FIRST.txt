@@ -1,4 +1,4 @@
-SnapBoard — install
+Clipwell — install
 ===================
 
 Windows-style window snapping + clipboard history for macOS 15 or later.
@@ -7,37 +7,37 @@ Windows-style window snapping + clipboard history for macOS 15 or later.
 ┌──────────────────────────────────────────────────────────────────┐
 │  EXPECT THIS ERROR. IT IS NORMAL. NOTHING IS WRONG.              │
 │                                                                  │
-│    "Apple could not verify SnapBoard is free of malware that     │
+│    "Apple could not verify Clipwell is free of malware that     │
 │     may harm your Mac or compromise your privacy."               │
 │                                                                  │
-│  or  "SnapBoard is damaged and can't be opened."                 │
+│  or  "Clipwell is damaged and can't be opened."                 │
 │                                                                  │
 │  macOS says this about ANY app that has not been through         │
-│  Apple's paid notarisation service ($99/year). SnapBoard is a    │
+│  Apple's paid notarisation service ($99/year). Clipwell is a    │
 │  free tool signed with a self-made signature, so macOS cannot    │
 │  look it up. Step 2 below is how you get past it.                │
 └──────────────────────────────────────────────────────────────────┘
 
 
-STEP 1 — DRAG SnapBoard onto the Applications folder in this window.
+STEP 1 — DRAG Clipwell onto the Applications folder in this window.
 
 
 STEP 2 — GET PAST GATEKEEPER. Pick whichever you prefer.
 
   EASIER — Terminal (one line, takes a second):
 
-      xattr -dr com.apple.quarantine /Applications/SnapBoard.app
+      xattr -dr com.apple.quarantine /Applications/Clipwell.app
 
       Open Terminal from Spotlight (Cmd+Space, type "Terminal"),
       paste that line, press Return. No output means it worked.
-      Now open SnapBoard normally.
+      Now open Clipwell normally.
 
   NO TERMINAL — System Settings:
 
-      a. Double-click SnapBoard. You get the error above. Click Done.
+      a. Double-click Clipwell. You get the error above. Click Done.
       b. Open System Settings > Privacy & Security.
       c. Scroll down to the "Security" section. You will see a line
-         about SnapBoard being blocked.
+         about Clipwell being blocked.
       d. Click "Open Anyway", then confirm.
 
       NOTE: on macOS 15 and later, right-clicking the app and
@@ -47,10 +47,10 @@ STEP 2 — GET PAST GATEKEEPER. Pick whichever you prefer.
 
 STEP 3 — GRANT ACCESSIBILITY.
 
-      open /Applications/SnapBoard.app
+      open /Applications/Clipwell.app
 
   A setup window appears with a button through to the right pane.
-  Turn ON the switch next to SnapBoard.
+  Turn ON the switch next to Clipwell.
 
   The setup window closes by itself once it works.
 
@@ -85,10 +85,10 @@ IF YOU UPDATE TO A NEWER BUILD LATER
   macOS ties the Accessibility permission to the app's signature,
   and that signature changes with every build. After installing a
   new version, snapping may silently stop working. Fix it by
-  removing SnapBoard from the Accessibility list (select it, press
+  removing Clipwell from the Accessibility list (select it, press
   the minus button) and adding the new copy — or run:
 
-      tccutil reset Accessibility com.thiru.snapboard
+      tccutil reset Accessibility com.thiru.clipwell
 
   then re-grant it.
 
@@ -96,7 +96,7 @@ IF YOU UPDATE TO A NEWER BUILD LATER
 THINGS TO KNOW BEFORE RUNNING THIS ON A WORK MACHINE
 -----------------------------------------------------
  * Clipboard history is stored UNENCRYPTED as plain JSON at
-     ~/Library/Application Support/SnapBoard/history.json
+     ~/Library/Application Support/Clipwell/history.json
    Everything you copy goes in there, including anything you paste
    out of a password vault that does not mark itself as concealed.
    Check your company policy. You can set retention to 7 days in
@@ -110,11 +110,11 @@ THINGS TO KNOW BEFORE RUNNING THIS ON A WORK MACHINE
 TO UNINSTALL
 ------------
    Quit from the menu bar icon, then:
-       rm -rf /Applications/SnapBoard.app
-       rm -rf ~/Library/Application\ Support/SnapBoard
+       rm -rf /Applications/Clipwell.app
+       rm -rf ~/Library/Application\ Support/Clipwell
 
    The second line deletes your clipboard history.
 
 
 Source, issues and newer builds:
-   https://github.com/r-thirumaran/SnapBoard
+   https://github.com/r-thirumaran/Clipwell

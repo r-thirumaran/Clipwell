@@ -1,4 +1,4 @@
-# SnapBoard
+# Clipwell
 
 A menu-bar-only macOS utility that brings two things over from Windows:
 
@@ -25,7 +25,7 @@ instructions. Then launch it and grant the permission — nothing works until yo
 
 | Backend | Used when | Notes |
 |---|---|---|
-| `xcodebuild` | full Xcode installed | `xcodebuild -project SnapBoard.xcodeproj -scheme SnapBoard -configuration Release` |
+| `xcodebuild` | full Xcode installed | `xcodebuild -project Clipwell.xcodeproj -scheme Clipwell -configuration Release` |
 | `Tools/build.sh` | Command Line Tools only | plain `swiftc` + `codesign`; produces the same bundle |
 
 Other targets: `make build`, `make run`, `make stop`, `make test`, `make uninstall`,
@@ -33,13 +33,13 @@ Other targets: `make build`, `make run`, `make stop`, `make test`, `make uninsta
 
 ### Granting Accessibility
 
-SnapBoard needs **System Settings ▸ Privacy & Security ▸ Accessibility** for two things: moving
+Clipwell needs **System Settings ▸ Privacy & Security ▸ Accessibility** for two things: moving
 other apps' windows, and pressing ⌘V for you. Both are the same permission. On first launch it
 opens a setup window with a button straight to that pane.
 
 > **Rebuilds and the Accessibility permission.** macOS ties the grant to the app's code
 > signature. An ad-hoc signature (`CODE_SIGN_IDENTITY = "-"`) changes on every rebuild, so after
-> reinstalling you may need to select SnapBoard in the Accessibility list, press **−**, and
+> reinstalling you may need to select Clipwell in the Accessibility list, press **−**, and
 > re-add it. If you have an Apple Development certificate, `Tools/build.sh` picks it up
 > automatically and the grant then survives rebuilds.
 
@@ -71,7 +71,7 @@ On one display this collapses to a left/right toggle. At the outermost display t
 put and beeps, unless you enable **Cycling wraps around** in Settings.
 
 **⌘+Arrow mode** (off by default) additionally binds plain `⌘←`/`⌘→`. It is off for good reason:
-those keys normally jump to line start/end and go back/forward in browsers, and SnapBoard takes
+those keys normally jump to line start/end and go back/forward in browsers, and Clipwell takes
 them over everywhere. The Settings UI warns about this inline.
 
 ### Clipboard panel keys
@@ -131,7 +131,7 @@ notification at all. Reading `changeCount` does not touch pasteboard contents, s
 free until something actually changes.
 
 **Image bytes never enter `history.json`.** They live at
-`Application Support/SnapBoard/Images/<uuid>.png`. Five hundred inlined screenshots would mean
+`Application Support/Clipwell/Images/<uuid>.png`. Five hundred inlined screenshots would mean
 re-encoding a several-hundred-megabyte JSON file on every single copy.
 
 **Hot keys are suspended while recording a shortcut.** Otherwise pressing `⌘⇧V` to re-record it
@@ -156,7 +156,7 @@ Accessibility permission is used only to move windows and to press ⌘V.
 - **`ClipItem.imagePNGData` is a computed accessor**, not a stored property — see the image
   storage note above. `hasImage` is what gets persisted.
 - **⌘+Arrow mode adds bindings rather than replacing them**, so `⌃⌘←` keeps working when it is on.
-- **Maximized window with no remembered frame** (it was already maximized before SnapBoard
+- **Maximized window with no remembered frame** (it was already maximized before Clipwell
   started) restores to a centred 70% rect, since there is nothing to restore *to*.
 - **Pasting does not reorder history.** Re-*copying* moves an item to the top, as specified;
   pasting leaves the list where it was so it does not shuffle under you.
@@ -166,9 +166,9 @@ Accessibility permission is used only to move windows and to press ⌘V.
   is a separate matter, and a search field that silently swallows typing would be useless. The
   paste target is preserved independently by `FrontmostAppTracker`, which watches
   `didActivateApplicationNotification`, so activating costs nothing. This also fixes a real bug:
-  opening a status-bar menu makes SnapBoard frontmost, so reading `frontmostApplication` at
+  opening a status-bar menu makes Clipwell frontmost, so reading `frontmostApplication` at
   paste time would have returned *us*.
-- **Bundle ID is `com.thiru.snapboard`**; retention is swept hourly, not only at launch.
+- **Bundle ID is `com.thiru.clipwell`**; retention is swept hourly, not only at launch.
 
 ---
 
@@ -190,7 +190,7 @@ Ten automated checks (`Tools/smoketest.sh`), all passing:
 ✓ history.json stayed free of image bytes
 ✓ history survived quit + relaunch
 ✓ LSUIElement is set (no Dock icon)
-✓ SnapBoard does not appear as a foreground app
+✓ Clipwell does not appear as a foreground app
 ```
 
 ### Manual checklist
@@ -212,7 +212,7 @@ These need the Accessibility grant and a human at the keyboard:
 ## Known caveats
 
 - **macOS ships its own window tiling shortcuts** (System Settings ▸ Desktop & Dock ▸ Windows,
-  and Keyboard Shortcuts). If a default collides on your setup, SnapBoard logs it, and shows an
+  and Keyboard Shortcuts). If a default collides on your setup, Clipwell logs it, and shows an
   alert if the collision appears while you are changing shortcuts in Settings. All five defaults
   registered cleanly on macOS 26.5 during testing.
 - **Some windows resist exact sizing.** Terminal quantises to a character grid; apps with
@@ -231,7 +231,7 @@ These need the Accessibility grant and a human at the keyboard:
 
 macOS puts a screenshot on the clipboard **only** when you add Control:
 
-| Shortcut | What macOS does | Captured by SnapBoard |
+| Shortcut | What macOS does | Captured by Clipwell |
 |---|---|---|
 | `⌃⌘⇧3` / `⌃⌘⇧4` | copies to clipboard | **yes**, automatically |
 | `⌘⇧3` / `⌘⇧4` / `⌘⇧5` | saves a file to Desktop | no — nothing reaches the clipboard |
@@ -241,18 +241,18 @@ So if you want every screenshot in your history, pick one of these.
 **Option 1 — swap the shortcuts (no extra permission).** In System Settings ▸ Keyboard ▸
 Keyboard Shortcuts ▸ Screenshots, give *"Copy picture of selected area to the Clipboard"* the
 plain `⌘⇧4`, and move *"Save picture of selected area as a file"* to `⌃⌘⇧4`. Now your muscle
-memory copies to the clipboard and SnapBoard picks it up with no new permissions at all. The
+memory copies to the clipboard and Clipwell picks it up with no new permissions at all. The
 trade-off is that screenshots stop auto-saving to the Desktop unless you use the Control
 variant.
 
-**Option 2 — let SnapBoard watch the folder (opt-in).** Settings ▸ Clipboard ▸ Screenshots ▸
+**Option 2 — let Clipwell watch the folder (opt-in).** Settings ▸ Clipboard ▸ Screenshots ▸
 *"watch the screenshots folder and import automatically"*. This catches `⌘⇧3`, `⌘⇧4` and `⌘⇧5`
 and still saves the file as normal.
 
 > This one asks macOS for **Files and Folders** access to your Desktop — a permission entirely
 > separate from Accessibility. It is off by default deliberately: a clipboard tool requesting
 > to read your Desktop deserves an explicit yes rather than a surprise prompt. The consent
-> dialog can also appear *behind* other windows or on another display, because SnapBoard has no
+> dialog can also appear *behind* other windows or on another display, because Clipwell has no
 > Dock icon to anchor it — if the status in Settings says "Waiting for permission", go looking
 > for that dialog.
 
@@ -260,28 +260,28 @@ and still saves the file as normal.
 
 ## Installing the prebuilt release
 
-Grab the `.dmg` from [Releases](https://github.com/r-thirumaran/SnapBoard/releases) and drag
-SnapBoard to Applications.
+Grab the `.dmg` from [Releases](https://github.com/r-thirumaran/Clipwell/releases) and drag
+Clipwell to Applications.
 
 ### macOS will refuse to open it. This is expected.
 
 You will see one of:
 
-> **"Apple could not verify "SnapBoard" is free of malware that may harm your Mac or
+> **"Apple could not verify "Clipwell" is free of malware that may harm your Mac or
 > compromise your privacy."**
 >
-> **"SnapBoard is damaged and can't be opened."**
+> **"Clipwell is damaged and can't be opened."**
 
 Neither means anything is wrong with the app. macOS says this about *any* app that has not been
-through Apple's paid notarisation service ($99/yr); SnapBoard is ad-hoc signed, so there is
+through Apple's paid notarisation service ($99/yr); Clipwell is ad-hoc signed, so there is
 nothing for Gatekeeper to look up. Get past it either way:
 
 ```bash
-xattr -dr com.apple.quarantine /Applications/SnapBoard.app
+xattr -dr com.apple.quarantine /Applications/Clipwell.app
 ```
 
 or, without Terminal: try to open the app once, dismiss the error, then go to **System Settings
-▸ Privacy & Security**, scroll to **Security**, and click **Open Anyway** next to the SnapBoard
+▸ Privacy & Security**, scroll to **Security**, and click **Open Anyway** next to the Clipwell
 message.
 
 > On macOS 15 and later, right-click ▸ Open **no longer bypasses this** — Apple removed that
@@ -292,15 +292,15 @@ build it yourself. One command, no dependencies, and the result is signed on you
 so Gatekeeper never complains:
 
 ```bash
-git clone https://github.com/r-thirumaran/SnapBoard.git && cd SnapBoard && make install
+git clone https://github.com/r-thirumaran/Clipwell.git && cd Clipwell && make install
 ```
 
 Then grant Accessibility as described above.
 
 > **Heads-up on updates.** macOS ties the Accessibility grant to an app's code signature, and an
 > ad-hoc signature changes on every build. After installing a new version you may need to remove
-> SnapBoard from the Accessibility list and re-add it, or run
-> `tccutil reset Accessibility com.thiru.snapboard`. This goes away if the project ever moves to
+> Clipwell from the Accessibility list and re-add it, or run
+> `tccutil reset Accessibility com.thiru.clipwell`. This goes away if the project ever moves to
 > a Developer ID signature — see [dist/DISTRIBUTION.md](dist/DISTRIBUTION.md).
 
 ## Contributing

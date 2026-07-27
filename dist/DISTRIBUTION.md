@@ -1,9 +1,9 @@
-# Distributing SnapBoard
+# Distributing Clipwell
 
 ## The Mac App Store is not an option
 
 Not "hard" — impossible. The App Store requires **App Sandbox**, and the Accessibility API
-does not function inside a sandbox. SnapBoard's two features *are* Accessibility: moving other
+does not function inside a sandbox. Clipwell's two features *are* Accessibility: moving other
 apps' windows, and synthesising ⌘V. Turning the sandbox on turns the app into a menu bar icon
 that can do nothing.
 
@@ -29,7 +29,7 @@ distribution you would have to drop window snapping entirely and accept a worse 
 
 macOS ties the Accessibility permission to the app's **code signature**. An ad-hoc signature is
 regenerated on every single build, so every update you send your team is, to macOS, a different
-app. They will see SnapBoard already listed with the switch ON while the newly installed copy is
+app. They will see Clipwell already listed with the switch ON while the newly installed copy is
 silently denied — it looks like the app is broken for no reason.
 
 This is not theoretical: it happened on this machine. `tccutil` found **three** stale entries
@@ -41,7 +41,7 @@ other issue combined. It is the single strongest argument for paying the $99.
 The fix, per update, is:
 
 ```bash
-tccutil reset Accessibility com.thiru.snapboard
+tccutil reset Accessibility com.thiru.clipwell
 # then re-add the app in System Settings > Privacy & Security > Accessibility
 ```
 
@@ -50,7 +50,7 @@ tccutil reset Accessibility com.thiru.snapboard
 ## Option A — ship what you have now (free)
 
 ```bash
-make dmg          # -> build/SnapBoard-1.0.dmg  (~850 KB)
+make dmg          # -> build/Clipwell-1.0.dmg  (~850 KB)
 ```
 
 The disk image contains the app, an Applications symlink to drag onto, and
@@ -59,10 +59,10 @@ The disk image contains the app, an Applications symlink to drag onto, and
 Send it however you like — Slack, email, Drive, AirDrop. Recipients must run:
 
 ```bash
-xattr -dr com.apple.quarantine /Applications/SnapBoard.app
+xattr -dr com.apple.quarantine /Applications/Clipwell.app
 ```
 
-Without it: *"SnapBoard is damaged and can't be opened."* That message is Gatekeeper refusing an
+Without it: *"Clipwell is damaged and can't be opened."* That message is Gatekeeper refusing an
 ad-hoc signature that carries a download quarantine flag. Nothing is actually damaged.
 
 **Honest assessment:** fine for a handful of colleagues who will tolerate a Terminal command and
@@ -94,7 +94,7 @@ It prints the remaining steps and reports whether the certificate and credential
    password never passes through a script or a repo:
 
 ```bash
-xcrun notarytool store-credentials snapboard-notary \
+xcrun notarytool store-credentials clipwell-notary \
   --apple-id you@example.com --team-id YOURTEAMID
 ```
 
@@ -124,8 +124,8 @@ PPPC configuration profile likely governs which apps may receive Accessibility. 
 not on IT's allowlist cannot be enabled — the switch reverts silently and there is no user-side
 workaround. Ask IT first; notarisation helps your case but does not override an MDM policy.
 
-**Clipboard history is a data-handling question.** SnapBoard stores everything copied as
-unencrypted JSON at `~/Library/Application Support/SnapBoard/history.json`. On work machines
+**Clipboard history is a data-handling question.** Clipwell stores everything copied as
+unencrypted JSON at `~/Library/Application Support/Clipwell/history.json`. On work machines
 that will accumulate customer data, internal material, and anything pasted from a vault that
 does not set the concealed-type marker. Flag this to your team explicitly rather than letting
 them discover it, suggest a 7-day retention, and check your company's policy before a wider
