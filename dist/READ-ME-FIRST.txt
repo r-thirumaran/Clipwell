@@ -80,6 +80,17 @@ HOW TO USE IT
    to change that.
 
 
+IT STARTS WITH YOUR MAC
+-----------------------
+  The first time Clipwell opens from Applications it adds itself to
+  your login items, so it is back in the menu bar after a restart.
+  macOS shows a "Background Items Added" notice when this happens —
+  that is expected.
+
+  Don't want that? Click the menu bar icon and untick
+  "Launch at Login". It stays off after that.
+
+
 IF YOU UPDATE TO A NEWER BUILD LATER
 ------------------------------------
   macOS ties the Accessibility permission to the app's signature,
@@ -109,7 +120,8 @@ THINGS TO KNOW BEFORE RUNNING THIS ON A WORK MACHINE
 
 TO UNINSTALL
 ------------
-   Quit from the menu bar icon, then:
+   Untick "Launch at Login" in the menu bar icon, then quit from
+   the same menu, then:
        rm -rf /Applications/Clipwell.app
        rm -rf ~/Library/Application\ Support/Clipwell
 
