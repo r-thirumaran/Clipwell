@@ -234,8 +234,10 @@ struct SettingsView: View {
             } header: {
                 Text("Startup")
             } footer: {
-                Text("Enable this after running `make install`, so the login item points at the "
-                     + "copy in /Applications rather than a build directory.")
+                Text("Clipwell turns this on the first time it runs from Applications, so it is "
+                     + "back in the menu bar after a restart. If you build from source, only "
+                     + "enable it by hand after `make install`, so the login item points at "
+                     + "/Applications rather than a build directory.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

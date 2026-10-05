@@ -41,6 +41,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         observeNotifications()
         startRetentionSweep()
 
+        // A clipboard history that only records while you remember to open it is not much of
+        // one, so come back after a restart by default.
+        LaunchAtLogin.enableByDefaultIfNeeded()
+        preferences.refreshLaunchAtLogin()
+
         requestAccessibilityIfNeeded()
     }
 
@@ -173,6 +178,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if settingsWindow == nil {
             settingsWindow = SettingsWindowController(preferences: preferences, store: store)
         }
+        preferences.refreshLaunchAtLogin()
         settingsWindow?.present()
     }
 

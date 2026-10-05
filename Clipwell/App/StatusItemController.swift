@@ -92,6 +92,15 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
         menu.addItem(.separator())
 
+        let login = NSMenuItem(title: "Launch at Login",
+                               action: #selector(toggleLaunchAtLogin),
+                               keyEquivalent: "")
+        login.target = self
+        // Read from macOS rather than `preferences`: System Settings ▸ Login Items can flip it
+        // without Clipwell hearing about it.
+        login.state = LaunchAtLogin.isEnabled ? .on : .off
+        menu.addItem(login)
+
         let settings = NSMenuItem(title: "Settings…",
                                   action: #selector(openSettings),
                                   keyEquivalent: ",")
@@ -117,4 +126,12 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     @objc private func openSettings() { onOpenSettings?() }
     @objc private func clearHistory() { onClearHistory?() }
     @objc private func quit() { NSApp.terminate(nil) }
+
+    @objc private func toggleLaunchAtLogin() {
+        // Going through `preferences` keeps the Settings toggle in step.
+        preferences.launchAtLogin = !LaunchAtLogin.isEnabled
+        // The switch macOS is waiting on lives in System Settings, so take the user there
+        // rather than leaving the checkmark mysteriously unticked.
+        if LaunchAtLogin.requiresApproval { LaunchAtLogin.openLoginItemsSettings() }
+    }
 }

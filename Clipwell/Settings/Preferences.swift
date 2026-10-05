@@ -122,6 +122,12 @@ final class Preferences: ObservableObject {
         }
     }
 
+    /// Re-reads the login item from macOS, which can change it behind our back — System
+    /// Settings ▸ Login Items, or the first-run default. Never registers or unregisters.
+    func refreshLaunchAtLogin() {
+        launchAtLogin = LaunchAtLogin.isEnabled
+    }
+
     // MARK: - Init
 
     /// Bundle identifier the app shipped under before it was renamed.

@@ -41,6 +41,12 @@ Text, rich text, images and files. Search as you type, pin the things you paste 
 and paste with `Return` or a click — Clipwell re-activates the app you were in and presses
 `⌘V` for you. Unlike Spotlight's clipboard, history is on disk and is still there tomorrow.
 
+**It starts with your Mac.**
+The first time Clipwell runs from Applications it adds itself as a login item, so it is back
+in the menu bar after every restart and never misses a copy. Turn that off with **Launch at
+Login** in the menu bar, in Settings ▸ General, or in System Settings ▸ General ▸ Login Items —
+it will not switch itself back on.
+
 **It refuses to record your passwords.**
 Items marked `org.nspasteboard.ConcealedType` — what password managers set — are skipped
 outright, along with transient and auto-generated pasteboard data.
@@ -263,8 +269,9 @@ These need the Accessibility grant and a human at the keyboard:
 - [ ] Copy a password from your password manager — it must **not** appear
 - [ ] History survives a reboot
 - [ ] `⌘⇧V` → type to search → `↩` pastes into the app you were just in
-- [ ] Launch at login works after `make install` (enable it *after* installing, so the login
-      item points at `/Applications` rather than a build directory)
+- [ ] First launch from `/Applications` ticks **Launch at Login**, and Clipwell is back in the
+      menu bar after a restart; launching from `build/` (`make run`, `make test`) leaves it off
+- [ ] Unticking **Launch at Login** survives a relaunch — it is not switched back on
 
 ---
 
